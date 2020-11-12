@@ -6,9 +6,14 @@ const {
 } = require('../modules/authentication-middleware');
 
 router.get('/', rejectUnauthenticated, (req, res) => {
-  res.send(req.user);
+  // res.send(req.user);
+  //  if(req.isAuthenticated() === false){
+  //           res.sendStatus(403);
+  //       } else {
   pool
-    .query('SELECT * FROM "secret";')
+    .query(`SELECT ("content")
+    FROM "secret"
+    WHERE "secret"."secrecy_level" <= ${req.user.clearance_level};`)
     .then((results) => res.send(results.rows))
     .catch((error) => {
       console.log('Error making SELECT for secrets:', error);
